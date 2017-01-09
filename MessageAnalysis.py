@@ -51,8 +51,14 @@ for i in polarityList:
 
 
 splitDf = pd.DataFrame(splitPolarityList,columns=["Neg","Neu","Pos","Compound"])
+splitDf["Neg"] = splitDf["Neg"].str.replace('{\'neg\': ',"")
+splitDf["Neu"] = splitDf["Neu"].str.replace('\'neu\': ',"")
+splitDf["Pos"] = splitDf["Pos"].str.replace('\'pos\': ',"")
+splitDf["Compound"] = splitDf["Compound"].str.replace('\'compound\': ',"")
+splitDf["Compound"] = splitDf["Compound"].str.replace('}',"")
+
 non_decimal = re.compile(r'[^\d.]+')
-splitDf.replace(to_replace = 'non_decimal',value='', regex = True)
+
 
 combinedDf = pd.concat([dateDf, nameDf, textBodyDf, splitDf],axis=1)
 print (combinedDf.head())
