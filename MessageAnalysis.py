@@ -1,12 +1,16 @@
 import pandas as pd
 import os
 import csv
-from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import re
+import matplotlib.pyplot as plt
+import matplotlib
+import numpy as np
+
+matplotlib.style.use('ggplot')
 
 mainMessageCorpus = pd.read_csv("fullText_Clean.csv",header=0, \
 delimiter=",", skip_blank_lines = True)
-
 
 mainMessageCorpus.dropna(how="all",inplace=False)
 
@@ -21,7 +25,6 @@ for body in mainMessageCorpus["Text Body"]:
       if body:
             vs = analyzer.polarity_scores(body)
             polarityList.append(str(vs))
-            #print("{:-<65} {}".format(body,str(vs)))
 dateList = []
 nameList = []
 bodyList = []
@@ -59,14 +62,19 @@ splitDf["Compound"] = splitDf["Compound"].str.replace('}',"")
 
 non_decimal = re.compile(r'[^\d.]+')
 
-
 combinedDf = pd.concat([dateDf, nameDf, textBodyDf, splitDf],axis=1)
-print (combinedDf.head())
 
+nameFreqCount = combinedDf['Name'].value_counts().to_dict()
+nameFreqDf = pd.DataFrame(list(nameFreqCount.items()),columns=['Name','Frequency'])
 
-testStr = non_decimal.sub('', 'compound -0.296}')
+plt.pie(
+      nameFreqDf['Frequency'],
+      labels=nameFreqDf['Name'],
+      shadow=False,
+      colors=None, 
+)
 
-#polarityDf.to_dict()
-#combinedDf.info()
+plt.axis('equal')
 
-#print (mainMessageCorpus["Text Body"][1])
+plt.tight_layout()
+plt.show(block = True)
